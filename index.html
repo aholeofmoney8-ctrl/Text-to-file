@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Txt Exporter</title>
+    <!-- iOS Home Screen Fullscreen Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TxtSave">
+    <link rel="apple-touch-icon" href="https://flaticon.com">
+    
+    <style>
+        :root {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --accent: #238636;
+            --accent-hover: #2ea043;
+            --text: #c9d1d9;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom) 16px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header { padding: 15px 0 10px 0; text-align: center; }
+        h1 { font-size: 1.2rem; font-weight: 600; color: #f0f6fc; }
+        
+        #textInput {
+            flex: 1;
+            background: var(--panel);
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 1rem;
+            color: #f0f6fc;
+            resize: none;
+            outline: none;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            background-color: var(--accent);
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            height: 55px;
+            cursor: pointer;
+            transition: transform 0.1s ease, background-color 0.1s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        button:active { transform: scale(0.97); background-color: var(--accent-hover); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📄 Instant .Txt Exporter</h1>
+    </header>
+
+    <textarea id="textInput" placeholder="Type or paste your text here..."></textarea>
+
+    <button onclick="downloadAsTxtFile()">💾 Export to .txt File</button>
+
+    <script>
+        function downloadAsTxtFile() {
+            const textContent = document.getElementById('textInput').value;
+            
+            if (!textContent.trim()) {
+                alert('Please enter some text first!');
+                return;
+            }
+            
+            
+        
+            const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            
+
+            const now = new Date();
+            const timestamp = `${now.getMonth()+1}-${now.getDate()}_${now.getHours()}${now.getMinutes()}`;
+            link.download = `note_${timestamp}.txt`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            
+            
+            URL.revokeObjectURL(link.href);
+        }
+    </script>
+</body>
+</html>
