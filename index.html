@@ -2,98 +2,187 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Txt Exporter</title>
-    <!-- iOS Home Screen Fullscreen Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="TxtSave">
-    <link rel="apple-touch-icon" href="https://flaticon.com">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal File Converter</title>
     <style>
         :root {
-            --bg: #0d1117;
-            --panel: #161b22;
-            --accent: #238636;
-            --accent-hover: #2ea043;
-            --text: #c9d1d9;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            /* Vivid Blue Palette */
+            --primary-color: #007bff; 
+            --primary-hover: #0056b3;
+            --border-color: #cccccc;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #121212;
+                --card-bg: #1e1e1e;
+                --text-color: #e0e0e0;
+                --border-color: #444444;
+            }
+        }
+
         body {
-            background-color: var(--bg);
-            color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom) 16px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
             display: flex;
-            flex-direction: column;
-            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        header { padding: 15px 0 10px 0; text-align: center; }
-        h1 { font-size: 1.2rem; font-weight: 600; color: #f0f6fc; }
-        
-        #textInput {
-            flex: 1;
-            background: var(--panel);
-            border: 1px solid #30363d;
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 20px;
             border-radius: 12px;
-            padding: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: transparent;
+            color: var(--text-color);
+            font-family: monospace;
             font-size: 1rem;
-            color: #f0f6fc;
-            resize: none;
-            outline: none;
-            line-height: 1.4;
+            resize: vertical;
+            box-sizing: border-box;
             margin-bottom: 15px;
         }
-        
-        button {
-            background-color: var(--accent);
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: white;
-            height: 55px;
-            cursor: pointer;
-            transition: transform 0.1s ease, background-color 0.1s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
         }
-        button:active { transform: scale(0.97); background-color: var(--accent-hover); }
+
+        .file-settings {
+            display: flex;
+            gap: 8px;
+        }
+
+        input[type="text"], select {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        input[type="text"] {
+            flex: 2;
+        }
+
+        select {
+            flex: 1;
+        }
+
+        /* The Custom Blue Button */
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>📄 Instant .Txt Exporter</h1>
-    </header>
-
-    <textarea id="textInput" placeholder="Type or paste your text here..."></textarea>
-
-    <button onclick="downloadAsTxtFile()">💾 Export to .txt File</button>
-
-    <script>
-        function downloadAsTxtFile() {
-            const textContent = document.getElementById('textInput').value;
+<div class="container">
+    <h1>Universal File Converter</h1>
+    
+    <textarea id="textContent" placeholder="Type or paste your content here..."></textarea>
+    
+    <div class="controls">
+        <div class="file-settings">
+            <input type="text" id="fileNameInput" value="index" placeholder="File name">
             
-            if (!textContent.trim()) {
-                alert('Please enter some text first!');
-                return;
-            }
-            
-            
+            <select id="extensionSelect" onchange="handleExtensionChange()">
+                <option value=".html">.html</option>
+                <option value=".txt">.txt</option>
+                <option value=".css">.css</option>
+                <option value=".js">.js</option>
+                <option value=".json">.json</option>
+                <option value=".csv">.csv</option>
+                <option value=".py">.py</option>
+                <option value=".md">.md</option>
+                <option value="custom">Custom...</option>
+            </select>
+        </div>
         
-            const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            
+        <input type="text" id="customExtInput" style="display: none;" placeholder="Type extension (e.g. .bat)">
+    </div>
 
-            const now = new Date();
-            const timestamp = `${now.getMonth()+1}-${now.getDate()}_${now.getHours()}${now.getMinutes()}`;
-            link.download = `note_${timestamp}.txt`;
-            link.href = URL.createObjectURL(blob);
-            link.click();
-            
-            
-            URL.revokeObjectURL(link.href);
+    <button onclick="downloadFile()">Download File</button>
+</div>
+
+<script>
+    function handleExtensionChange() {
+        const select = document.getElementById('extensionSelect');
+        const customInput = document.getElementById('customExtInput');
+        customInput.style.display = (select.value === 'custom') ? 'block' : 'none';
+    }
+
+    function downloadFile() {
+        const text = document.getElementById('textContent').value;
+        let baseName = document.getElementById('fileNameInput').value.trim() || "untitled";
+        const select = document.getElementById('extensionSelect');
+        let extension = select.value;
+
+        if (extension === 'custom') {
+            let customExt = document.getElementById('customExtInput').value.trim();
+            if (customExt && !customExt.startsWith('.')) {
+                customExt = '.' + customExt;
+            }
+            extension = customExt || '.txt'; 
         }
-    </script>
+
+        const finalFileName = baseName + extension;
+        const blob = new Blob([text], { type: 'application/octet-stream' });
+        const link = document.createElement('a');
+        
+        link.download = finalFileName;
+        link.href = URL.createObjectURL(blob);
+        
+        document.body.appendChild(link);
+        link.click();
+        
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+    }
+</script>
+
 </body>
 </html>
